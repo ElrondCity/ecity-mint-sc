@@ -113,9 +113,9 @@ pub trait EcityTest: elrond_wasm_modules::default_issue_callbacks::DefaultIssueC
         let curr_time = self.blockchain().get_block_timestamp();
         let episode_length = 14 * 24 * 60 * 60; // The length of an episode, in seconds (2 weeks)
         let elapsed_time = curr_time - self.vesting_start().get();
-        let episode_number = elapsed_time / episode_length + 1;
+        let episode_number = elapsed_time / episode_length; // +1
 
-        require!(episode_number / 26 + 1 <= self.episode_vesting().len().try_into().unwrap(), "Max supply reached"); // There are 26 episodes in a year, the length of episode_vesting is the number of years of the vesting schedule
+        require!(episode_number / 26 < self.episode_vesting().len().try_into().unwrap(), "Max supply reached"); // There are 26 episodes in a year, the length of episode_vesting is the number of years of the vesting schedule
 
         if episode_number % 2 == 0 {
             require!(!self.even_episode_minted().get(), "Episode already minted");

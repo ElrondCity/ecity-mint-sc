@@ -154,6 +154,58 @@ fn issue_premint_mint() {
 }
 
 #[test]
+fn premint_twice_fail() {
+    let rust_zero = &rust_biguint!(0u64);
+    let mut sc_setup = setup_contract(ecity_test::contract_obj);
+    let mut sc_setup2 = setup_contract(ecity_test::contract_obj);
+    let b_wrapper = &mut sc_setup.blockchain_wrapper;
+    let b_wrapper2 = &mut sc_setup2.blockchain_wrapper;
+    let sc_address = sc_setup.contract_wrapper.address_ref();
+    let user_address = &sc_setup.user_address;
+    let owner_address = &sc_setup.owner_address;
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.set_router(ManagedAddress::from(user_address.clone()));
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.episode_vesting_push(BigUint::from(100000000000000u64));
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_biguint!(5000000000000000u64), |sc| {
+        sc.issue_token(
+            BigUint::from(5000000000000000u64),
+            ManagedBuffer::from("ECITY"),
+            ManagedBuffer::from("ECT"));
+    }).assert_ok();
+
+    let local_roles: [EsdtLocalRole; 8] = [Mint, Burn, NftCreate, NftAddQuantity, NftBurn, NftAddUri, NftUpdateAttributes, Transfer];
+
+    b_wrapper2.execute_query(&sc_setup2.contract_wrapper, |sc| {
+        let arr: &mut [u8; 12] = &mut [1u8,2u8,3u8,4u8,5u8,6u8,7u8,8u8,9u8,10u8,11u8,12u8];
+        let tmp = sc.token().get_token_id().into_managed_buffer().load_to_byte_array(arr);
+        b_wrapper.set_esdt_local_roles(&sc_address, tmp, &local_roles);
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.premint(
+            BigUint::from(1000000u64),
+            ManagedAddress::from(user_address.clone()));
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.premint(
+            BigUint::from(1000000u64),
+            ManagedAddress::from(user_address.clone()));
+    }).assert_user_error("Already preminted");
+
+    b_wrapper.execute_tx(&user_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.mint();
+    }).assert_ok();
+
+}
+
+#[test]
 fn mint_twice_fail() {
     let rust_zero = &rust_biguint!(0u64);
     let mut sc_setup = setup_contract(ecity_test::contract_obj);
@@ -200,5 +252,86 @@ fn mint_twice_fail() {
     b_wrapper.execute_tx(&user_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
         sc.mint();
     }).assert_user_error("Episode already minted");
+}
+
+
+#[test]
+fn full_ecity_schedule() {
+    let rust_zero = &rust_biguint!(0u64);
+    let mut sc_setup = setup_contract(ecity_test::contract_obj);
+    let mut sc_setup2 = setup_contract(ecity_test::contract_obj);
+    let rust_18pow = rust_biguint!(u64::pow(10u64, 18u32));
+    let b_wrapper = &mut sc_setup.blockchain_wrapper;
+    let b_wrapper2 = &mut sc_setup2.blockchain_wrapper;
+    let sc_address = sc_setup.contract_wrapper.address_ref();
+    let user_address = &sc_setup.user_address;
+    let owner_address = &sc_setup.owner_address;
+
+    let mut curr_time = 0u64;
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.set_router(ManagedAddress::from(user_address.clone()));
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.episode_vesting_push(BigUint::from(rust_biguint!(7115u64) * &rust_18pow));
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.episode_vesting_push(BigUint::from(rust_biguint!(13653u64) * &rust_18pow));
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.episode_vesting_push(BigUint::from(rust_biguint!(3461u64) * &rust_18pow));
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.episode_vesting_push(BigUint::from(rust_biguint!(1923u64) * &rust_18pow));
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.episode_vesting_push(BigUint::from(rust_biguint!(769u64) * &rust_18pow));
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_biguint!(5000000000000000u64), |sc| {
+        sc.issue_token(
+            BigUint::from(5000000000000000u64),
+            ManagedBuffer::from("ECITY"),
+            ManagedBuffer::from("ECT"));
+    }).assert_ok();
+
+    let local_roles: [EsdtLocalRole; 8] = [Mint, Burn, NftCreate, NftAddQuantity, NftBurn, NftAddUri, NftUpdateAttributes, Transfer];
+
+    b_wrapper2.execute_query(&sc_setup2.contract_wrapper, |sc| {
+        let arr: &mut [u8; 12] = &mut [1u8,2u8,3u8,4u8,5u8,6u8,7u8,8u8,9u8,10u8,11u8,12u8];
+        let tmp = sc.token().get_token_id().into_managed_buffer().load_to_byte_array(arr);
+        b_wrapper.set_esdt_local_roles(&sc_address, tmp, &local_roles);
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.premint(
+            BigUint::from(rust_biguint!(300054u64) * &rust_18pow),
+            ManagedAddress::from(user_address.clone()));
+    }).assert_ok();
+
+    for _year in 0..5 {
+        for _episode in 0..26 {
+                b_wrapper.execute_tx(&user_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+                    sc.mint();
+                }).assert_ok();
+            curr_time += 60 * 60 * 24 * 14; // Two weeks in seconds, the length of an episode
+            b_wrapper.set_block_timestamp(curr_time);
+        }
+    }
+
+    b_wrapper2.execute_query(&sc_setup2.contract_wrapper, |sc| {
+        let arr: &mut [u8; 12] = &mut [1u8,2u8,3u8,4u8,5u8,6u8,7u8,8u8,9u8,10u8,11u8,12u8];
+        let tmp = sc.token().get_token_id().into_managed_buffer().load_to_byte_array(arr);
+        b_wrapper.check_esdt_balance(&user_address, tmp,&(rust_biguint!(1000000u64) * &rust_18pow)); // Check if we did mint the 1M tokens
+    }).assert_ok();
+
+    b_wrapper.execute_tx(&user_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
+        sc.mint();
+    }).assert_user_error("Max supply reached");
 
 }
