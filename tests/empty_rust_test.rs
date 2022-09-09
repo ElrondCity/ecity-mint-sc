@@ -79,6 +79,10 @@ fn set_router() {
     b_wrapper.execute_tx(&owner_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
         sc.set_router(ManagedAddress::from(user_address.clone()));
     }).assert_ok();
+
+    b_wrapper.execute_query(&sc_setup.contract_wrapper, |sc| {
+       assert_eq!(sc.router_contract().get(), ManagedAddress::from(user_address.clone()));
+    }).assert_ok();
 }
 
 #[test]
@@ -147,8 +151,20 @@ fn issue_premint_mint() {
             ManagedAddress::from(user_address.clone()));
     }).assert_ok();
 
+    b_wrapper2.execute_query(&sc_setup2.contract_wrapper, |sc| {
+        let arr: &mut [u8; 12] = &mut [1u8,2u8,3u8,4u8,5u8,6u8,7u8,8u8,9u8,10u8,11u8,12u8];
+        let tmp = sc.token().get_token_id().into_managed_buffer().load_to_byte_array(arr);
+        b_wrapper.check_esdt_balance(&user_address, tmp,&rust_biguint!(1000000u64));
+    }).assert_ok();
+
     b_wrapper.execute_tx(&user_address, &sc_setup.contract_wrapper, &rust_zero, |sc| {
         sc.mint();
+    }).assert_ok();
+
+    b_wrapper2.execute_query(&sc_setup2.contract_wrapper, |sc| {
+        let arr: &mut [u8; 12] = &mut [1u8,2u8,3u8,4u8,5u8,6u8,7u8,8u8,9u8,10u8,11u8,12u8];
+        let tmp = sc.token().get_token_id().into_managed_buffer().load_to_byte_array(arr);
+        b_wrapper.check_esdt_balance(&user_address, tmp,&rust_biguint!(1000000u64 + 100000000000000u64));
     }).assert_ok();
 
 }
