@@ -10,9 +10,10 @@ use core::convert::TryInto;
 pub trait EcityTest: elrond_wasm_modules::default_issue_callbacks::DefaultIssueCallbacksModule {
     #[init]
     fn init(&self) {
-        self.preminted().set(false);
-        self.odd_episode_minted().set(false);
-        self.even_episode_minted().set(false);
+        self.preminted().set_if_empty(false);
+        self.odd_episode_minted().set_if_empty(false);
+        self.even_episode_minted().set_if_empty(false);
+        self.router_locked().set_if_empty(false);
     }
 
     // Storage and views
@@ -37,6 +38,9 @@ pub trait EcityTest: elrond_wasm_modules::default_issue_callbacks::DefaultIssueC
     #[view(routerContract)]
     #[storage_mapper("routerContract")]
     fn router_contract(&self) -> SingleValueMapper<ManagedAddress<Self::Api>>; // Stores the address of the router contract, which will receive the newly minted tokens to distribute them according to the WP
+
+    #[storage_mapper("routerLocked")] // Might be removed if we can only set the router once. Food for thought.
+    fn router_locked(&self) -> SingleValueMapper<Self::Api, bool>; // Security for us to lock the router contract address forever, with no way of changing it. 
 
     #[view(preminted)]
     #[storage_mapper("preminted")]
@@ -99,7 +103,15 @@ pub trait EcityTest: elrond_wasm_modules::default_issue_callbacks::DefaultIssueC
         &self,
         router: ManagedAddress
     ) {
+        require!(!self.router_locked().get(), "Router locked");
         self.router_contract().set(router);
+    }
+
+    #[only_owner]
+    #[endpoint(lockRouter)]
+    fn lock_router(&self)
+    {
+        self.router_locked().set(true);
     }
 
     // Public endpoints
