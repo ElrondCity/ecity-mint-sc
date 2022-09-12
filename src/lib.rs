@@ -39,6 +39,7 @@ pub trait EcityTest: elrond_wasm_modules::default_issue_callbacks::DefaultIssueC
     #[storage_mapper("routerContract")]
     fn router_contract(&self) -> SingleValueMapper<ManagedAddress<Self::Api>>; // Stores the address of the router contract, which will receive the newly minted tokens to distribute them according to the WP
 
+    #[view(routerLocked)]
     #[storage_mapper("routerLocked")] // Might be removed if we can only set the router once. Food for thought.
     fn router_locked(&self) -> SingleValueMapper<Self::Api, bool>; // Security for us to lock the router contract address forever, with no way of changing it. 
 
