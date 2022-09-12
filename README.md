@@ -25,3 +25,5 @@ These endpoint must be called just after deploying the contract in order:
 - **issueToken**(price: `BigUint`, token_name: `ManagedBuffer`, token_ticker: `ManagedBuffer`)  
 - **premint**(amount: `BigUint`, to: `ManagedAddress`)
   Premints the given quantity of the token and sends it to the given address. This also starts the vesting schedule. The endpoint can only be called once.
+- **lockRouter**()
+  Locks the current router address so that it cannot be changed anymore. Can only be used once and is irreversible. This is a safety measure for real trustlessness from the community.

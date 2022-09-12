@@ -121,7 +121,7 @@ pub trait EcityTest: elrond_wasm_modules::default_issue_callbacks::DefaultIssueC
     fn mint(
         &self
     ) {
-        require!(self.preminted().get(), "Not preminted yet.");
+        require!(self.preminted().get(), "Not preminted yet");
 
         let curr_time = self.blockchain().get_block_timestamp();
         let episode_length = 14 * 24 * 60 * 60; // The length of an episode, in seconds (2 weeks)

@@ -88,6 +88,17 @@ premint() {
     echo $?
 }
 
+# Locks the router address so that it cannot be changed. Acts as a security for the community against Team abuse.
+lock_router() {
+    erdpy --verbose contract call ${ADDRESS} --recall-nonce ${PRIVATE_KEY}\
+        --gas-limit=50000000 \
+        --proxy=${PROXY} --chain=${CHAIN_ID} \
+        --function "lockRouter" \
+        --send
+
+    echo $?
+}
+
 # This is a public endpoint
 mint() {
     erdpy --verbose contract call ${ADDRESS} --recall-nonce ${PRIVATE_KEY}\
