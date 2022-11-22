@@ -14,9 +14,14 @@ pub trait EcityTest: elrond_wasm_modules::default_issue_callbacks::DefaultIssueC
         self.odd_episode_minted().set_if_empty(false);
         self.even_episode_minted().set_if_empty(false);
         self.router_locked().set_if_empty(false);
+        self.supply().set_if_empty(BigUint::zero());
     }
 
     // Storage and views
+
+    #[view(getSupply)]
+    #[storage_mapper("supply")]
+    fn supply(&self) -> SingleValueMapper<BigUint>;
 
     #[view(token)]
     #[storage_mapper("token")]
@@ -85,6 +90,7 @@ pub trait EcityTest: elrond_wasm_modules::default_issue_callbacks::DefaultIssueC
 
         self.preminted().set(true);
         self.vesting_start().set(self.blockchain().get_block_timestamp());
+        self.supply().update(|supply| *supply += &amount);
         self.token().mint_and_send(&to, amount);
     }
 
@@ -141,6 +147,8 @@ pub trait EcityTest: elrond_wasm_modules::default_issue_callbacks::DefaultIssueC
         }
 
         let to_mint = self.episode_vesting().get((episode_number / 26 + 1).try_into().unwrap());
+
+        self.supply().update(|supply| *supply += &to_mint);
 
         self.token().mint_and_send(&self.router_contract().get(), to_mint);
 

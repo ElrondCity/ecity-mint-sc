@@ -1,6 +1,6 @@
 #--------TECHNICAL--------
 
-ADDRESS="erd1qqqqqqqqqqqqqpgqtre705se9wdwj3efgddlyss73hsl64dml5ns2m3e8l"
+ADDRESS="erd1qqqqqqqqqqqqqpgqg2hx932h92yxwsx9gs4ukv8n7uad9x89l5nscwc6u7"
 OWNER_ADDRESS="erd1hm5dkcrp6xg3573ndl7n4a3x97u4dysa3ef6e7lgee8j3vz5l5nsa34h04"
 PRIVATE_KEY=(--keyfile=erd1hm5dkcrp6xg3573ndl7n4a3x97u4dysa3ef6e7lgee8j3vz5l5nsa34h04.json --passfile=.passfile)
 PASSFILE=--passfile=.passfile
@@ -8,7 +8,7 @@ PROXY=https://devnet-api.elrond.com
 CHAIN_ID=D
 
 deploy() {
-    erdpy --verbose contract deploy --bytecode output/ecity_test.wasm --recall-nonce ${PRIVATE_KEY} --gas-limit=500000000 --proxy=${PROXY} --chain=${CHAIN_ID} --send --outfile="deploy.interaction.json" || return
+    erdpy --verbose contract deploy --bytecode output/ecity_test.wasm --recall-nonce ${PRIVATE_KEY} --gas-limit=500000000 --proxy=${PROXY} --chain=${CHAIN_ID} --metadata-not-upgradeable --send --outfile="deploy.interaction.json" || return
 
     TRANSACTION=$(erdpy data parse --file="deploy.interaction.json" --expression="data['emitted_tx']['hash']")
     ADDRESS=$(erdpy data parse --file="deploy.interaction.json" --expression="data['emitted_tx']['address']")
