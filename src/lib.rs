@@ -78,7 +78,7 @@ pub trait EcityTest:
         let curr_time = self.blockchain().get_block_timestamp();
         let episode_length = 14 * 24 * 60 * 60; // The length of an episode, in seconds (2 weeks)
         let elapsed_time = curr_time - self.vesting_start().get();
-        let episode_number = elapsed_time / episode_length + 1;
+        let episode_number = elapsed_time / episode_length;
         return episode_number;
     }
 
@@ -138,7 +138,7 @@ pub trait EcityTest:
         let curr_time = self.blockchain().get_block_timestamp();
         let episode_length = 14 * 24 * 60 * 60; // The length of an episode, in seconds (2 weeks)
         let elapsed_time = curr_time - self.vesting_start().get();
-        let episode_number = elapsed_time / episode_length; // +1
+        let episode_number = elapsed_time / episode_length;
 
         require!(
             episode_number / 26 < self.episode_vesting().len().try_into().unwrap(),
