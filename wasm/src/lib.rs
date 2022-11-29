@@ -12,12 +12,15 @@ elrond_wasm_node::wasm_endpoints! {
         episodeVesting
         episodeVestingPush
         evenEpisodeMinted
+        getSupply
         issueToken
+        lockRouter
         mint
         oddEpisodeMinted
         premint
         preminted
         routerContract
+        routerLocked
         setRouter
         token
         vestingStart

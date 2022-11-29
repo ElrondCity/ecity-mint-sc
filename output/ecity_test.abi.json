@@ -1,0 +1,210 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.66.0-nightly",
+            "commitHash": "0da281b6068a7d889ae89a9bd8991284cc9b7535",
+            "commitDate": "2022-10-27",
+            "channel": "Nightly",
+            "short": "rustc 1.66.0-nightly (0da281b60 2022-10-27)"
+        },
+        "contractCrate": {
+            "name": "ecity_test",
+            "version": "0.0.0",
+            "git_version": "250df71-modified"
+        },
+        "framework": {
+            "name": "elrond-wasm",
+            "version": "0.34.1"
+        }
+    },
+    "docs": [
+        "The Minter contract for the ECITY token."
+    ],
+    "name": "EcityTest",
+    "constructor": {
+        "inputs": [],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "getSupply",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "token",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "episodeVesting",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<BigUint>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "evenEpisodeMinted",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "oddEpisodeMinted",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "routerContract",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "routerLocked",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "preminted",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "vestingStart",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "episode",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "issueToken",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [
+                {
+                    "name": "issue_cost",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "token_name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "token_ticker",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "premint",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "to",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "episodeVestingPush",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setRouter",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "router",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "lockRouter",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "mint",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        }
+    ],
+    "events": [],
+    "hasCallback": true,
+    "types": {}
+}
